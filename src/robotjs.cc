@@ -254,7 +254,7 @@ NAN_METHOD(keyTap)
 	{
 		return NanThrowError("Invalid key specified."); 
 	}
-	
+
 	if (args.Length() == 2) {
 		char *state = (*v8::String::Utf8Value(args[1]->ToString()));
 		if (strcmp(state, "down") == 0)
@@ -263,7 +263,7 @@ NAN_METHOD(keyTap)
 		} 
 		else if (strcmp(k, "up") == 0)
 		{
-			toggleKeyCode(key, true, flags);
+			toggleKeyCode(key, false, flags);
 		}
 	} else {
 		tapKeyCode(key, flags);
