@@ -171,14 +171,14 @@ NAN_METHOD(keyTap)
 {
 	NanScope();
 
-	if (args.Length() != 1)
+	if (args.Length() < 1)
 	{
 		return NanThrowError("Invalid number of arguments.");
 	}
 
 	MMKeyFlags flags = MOD_NONE;
 	MMKeyCode key;
-  
+	
 	char *k = (*v8::String::Utf8Value(args[0]->ToString()));
 
 	//There's a better way to do this, I just want to get it working.
@@ -234,8 +234,20 @@ NAN_METHOD(keyTap)
 	{
 		return NanThrowError("Invalid key specified."); 
 	}
-
-	tapKeyCode(key, flags);
+	
+	if (args.Length() == 2) {
+		char *state = (*v8::String::Utf8Value(args[1]->ToString()));
+		if (strcmp(state, "down") == 0)
+		{
+			toggleKeyCode(key, true, flags);
+		} 
+		else if (strcmp(k, "up") == 0)
+		{
+			toggleKeyCode(key, true, flags);
+		}
+	} else {
+		tapKeyCode(key, flags);
+	}
 
 	NanReturnValue(NanNew("1"));
 }
