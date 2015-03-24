@@ -230,6 +230,26 @@ NAN_METHOD(keyTap)
 	{
 		key = K_PAGEDOWN;
 	}
+	else if (strcmp(k, "shift") == 0)
+	{
+		key = K_SHIFT;
+	}
+	else if (strcmp(k, "control") == 0)
+	{
+		key = K_CONTROL;
+	}
+	else if (strcmp(k, "alt") == 0)
+	{
+		key = K_ALT;
+	}
+	else if (strcmp(k, "meta") == 0)
+	{
+		key = K_META;
+	}
+	else if (strcmp(k, "capslock") == 0)
+	{
+		key = K_CAPSLOCK;
+	}
 	else 
 	{
 		return NanThrowError("Invalid key specified."); 
