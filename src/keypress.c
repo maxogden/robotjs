@@ -30,14 +30,8 @@
 void toggleKeyCode(MMKeyCode code, const bool down, MMKeyFlags flags)
 {
 #if defined(IS_MACOSX)
-	CGEventRef keyEvent = CGEventCreateKeyboardEvent(NULL,
-	                                                 (CGKeyCode)code, down);
-	assert(keyEvent != NULL);
 
-	CGEventSetType(keyEvent, down ? kCGEventKeyDown : kCGEventKeyUp);
-	CGEventSetFlags(keyEvent, flags);
-	CGEventPost(kCGSessionEventTap, keyEvent);
-	CFRelease(keyEvent);
+
 #elif defined(IS_WINDOWS)
 	const DWORD dwFlags = down ? 0 : KEYEVENTF_KEYUP;
 
@@ -68,18 +62,58 @@ void tapKeyCode(MMKeyCode code, MMKeyFlags flags)
 	toggleKeyCode(code, false, flags);
 }
 
-void toggleKey(char c, const bool down, MMKeyFlags flags)
+void tapKey(MMKeyCode code, MMKeyFlags flags)
 {
-	if (isupper(c) && !(flags & MOD_SHIFT)) {
-		flags |= MOD_SHIFT; /* Not sure if this is safe for all layouts. */
-	}
-	toggleKeyCode(keyCodeForChar(c), down, flags);
-}
+#if defined(IS_MACOSX)
+  CGEventSourceRef src = 
+    CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
 
-void tapKey(char c, MMKeyFlags flags)
-{
-	toggleKey(c, true, flags);
-	toggleKey(c, false, flags);
+  CGKeyCode mod;
+  bool hasMod = true;
+  
+  if (flags & MOD_META) mod = K_META;
+  else if (flags & MOD_ALT) mod = K_ALT;
+  else if (flags & MOD_CONTROL) mod = K_CONTROL;
+  else if (flags & MOD_SHIFT) mod = K_SHIFT;
+  else hasMod = false;
+  
+  if (hasMod) {
+    CGEventRef modd = CGEventCreateKeyboardEvent(src, mod, false);
+    CGEventRef keyd = CGEventCreateKeyboardEvent(src, code, false);
+    CGEventRef modu = CGEventCreateKeyboardEvent(src, mod, true);
+    CGEventRef keyu = CGEventCreateKeyboardEvent(src, code, true);
+
+    CGEventSetFlags(keyd, flags);
+    CGEventSetFlags(keyu, flags);
+
+    CGEventTapLocation loc = kCGHIDEventTap; // kCGSessionEventTap also works
+    CGEventPost(loc, modd);
+    CGEventPost(loc, keyd);
+    CGEventPost(loc, keyu);
+    CGEventPost(loc, modu);
+
+    CFRelease(modd);
+    CFRelease(modu);
+    CFRelease(keyd);
+    CFRelease(keyu);
+    CFRelease(src);
+  } else {
+    CGEventRef keyd = CGEventCreateKeyboardEvent(src, code, false);
+    CGEventRef keyu = CGEventCreateKeyboardEvent(src, code, true);
+
+    CGEventTapLocation loc = kCGHIDEventTap;
+    CGEventPost(loc, keyd);
+    CGEventPost(loc, keyu);
+
+    CFRelease(keyd);
+    CFRelease(keyu);
+    CFRelease(src);
+  }
+
+#else
+  toggleKeyCode(code, true, flags);
+  toggleKeyCode(code, false, flags);
+#endif
 }
 
 #if defined(IS_MACOSX)

@@ -44,6 +44,9 @@ robot.typeString("Hello World");
 
 //Press enter. 
 robot.keyTap("enter");
+
+//Paste. 
+robot.keyTap("v", "meta");
 ```
 Get pixel color under the mouse. 
 
