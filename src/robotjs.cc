@@ -172,7 +172,7 @@ NAN_METHOD(keyTap)
 {
 	NanScope();
 
-	if (args.Length() != 1 || args.Length() != 2)
+	if (args.Length() == 0)
 	{
 		return NanThrowError("Invalid number of arguments.");
 	}
