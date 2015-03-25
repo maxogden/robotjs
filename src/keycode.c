@@ -62,6 +62,7 @@ struct XSpecialCharacterMapping XSpecialCharacterTable[] = {
 
 #endif
 
+// only works for ascii
 MMKeyCode keyCodeForChar(const char c)
 {
 #if defined(IS_MACOSX)
@@ -81,7 +82,7 @@ MMKeyCode keyCodeForChar(const char c)
 		                                           NULL);
 		if (charToCodeDict == NULL) return UINT16_MAX;
 
-		/* Loop through every keycode (0 - 127) to find its current mapping. */
+		/* Loop through every ascii keycode (0 - 127) to find its current mapping. */
 		for (i = 0; i < 128; ++i) {
 			CFStringRef string = createStringForKey((CGKeyCode)i);
 			if (string != NULL) {

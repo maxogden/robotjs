@@ -172,22 +172,18 @@ NAN_METHOD(keyTap)
 {
 	NanScope();
 
-	if (args.Length() < 1)
+	if (args.Length() != 1 || args.Length() != 2)
 	{
 		return NanThrowError("Invalid number of arguments.");
 	}
   
-
-	MMKeyFlags flags = MOD_NONE;
 	MMKeyCode key;
+	MMKeyFlags flags = MOD_NONE;
   
+  // argument one is the key to tap
 	char *k = (*v8::String::Utf8Value(args[0]->ToString()));
 
-  // char str[1024];
-  // sprintf(str, "--> \"%s\" %i\n", k, keyCodeForChar(*k));
-  // if (true) return NanThrowError(str);
-
-	//There's a better way to do this, I just want to get it working.
+	// whitelist of special characters
 	if (strcmp(k, "backspace") == 0)
 	{
 		key = K_BACKSPACE;
@@ -257,39 +253,39 @@ NAN_METHOD(keyTap)
 		key = K_CAPSLOCK;
 	}
   else {
+    // for all non-special chars e.g. a, b, c, ., [
     key = keyCodeForChar(*k);
   }
 
+  // argument 2 sets the key modifiers
   if (args.Length() == 2) {
-    char *state = (*v8::String::Utf8Value(args[1]->ToString()));
+    char *mod = (*v8::String::Utf8Value(args[1]->ToString()));
     
-  	if (strcmp(state, "shift") == 0)
+  	if (strcmp(mod, "shift") == 0)
   	{
   		flags = MOD_SHIFT;
   	}
-  	else if (strcmp(state, "control") == 0)
+  	else if (strcmp(mod, "control") == 0)
   	{
   		flags = MOD_CONTROL;
   	}
-  	else if (strcmp(state, "alt") == 0)
+  	else if (strcmp(mod, "alt") == 0)
   	{
   		flags = MOD_ALT;
   	}
-  	else if (strcmp(state, "meta") == 0)
+  	else if (strcmp(mod, "meta") == 0)
   	{
   		flags = MOD_META;
   	}
   }
-  
-	if (isupper(*k) && !(flags & MOD_SHIFT)) {
-		flags |= MOD_SHIFT; /* Not sure if this is safe for all layouts. */
-	}
   
   tapKey(key, flags);
 
 	NanReturnValue(NanNew("1"));
 }
 
+// types a full utf8 string using CGEventKeyboardSetUnicodeString
+// does not support key modifiers
 NAN_METHOD(typeString) 
 {
 	NanScope();

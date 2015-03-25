@@ -2,8 +2,6 @@
 #include "deadbeef_rand.h"
 #include "microsleep.h"
 
-#include <ctype.h> /* For isupper() */
-
 #if defined(IS_MACOSX)
 	#include <ApplicationServices/ApplicationServices.h>
 #elif defined(USE_X11)
@@ -76,12 +74,12 @@ void tapKey(MMKeyCode code, MMKeyFlags flags)
   else if (flags & MOD_CONTROL) mod = K_CONTROL;
   else if (flags & MOD_SHIFT) mod = K_SHIFT;
   else hasMod = false;
-  
+    
   if (hasMod) {
-    CGEventRef modd = CGEventCreateKeyboardEvent(src, mod, false);
-    CGEventRef keyd = CGEventCreateKeyboardEvent(src, code, false);
-    CGEventRef modu = CGEventCreateKeyboardEvent(src, mod, true);
-    CGEventRef keyu = CGEventCreateKeyboardEvent(src, code, true);
+    CGEventRef modd = CGEventCreateKeyboardEvent(src, mod, true);
+    CGEventRef keyd = CGEventCreateKeyboardEvent(src, code, true);
+    CGEventRef modu = CGEventCreateKeyboardEvent(src, mod, false);
+    CGEventRef keyu = CGEventCreateKeyboardEvent(src, code, false);
 
     CGEventSetFlags(keyd, flags);
     CGEventSetFlags(keyu, flags);
