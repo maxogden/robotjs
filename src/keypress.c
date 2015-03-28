@@ -87,7 +87,6 @@ void tapKey(MMKeyCode code, MMKeyFlags flags)
     CGEventTapLocation loc = kCGHIDEventTap; // kCGSessionEventTap also works
     CGEventPost(loc, modd);
     CGEventPost(loc, keyd);
-    usleep(1000); // sleep for 1ms
     CGEventPost(loc, keyu);
     CGEventPost(loc, modu);
 
